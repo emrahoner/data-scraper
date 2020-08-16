@@ -10,12 +10,16 @@ jobs:
       - save_cache:
         key: pre-artifact-{{ .Environment.CIRCLE_SHA1 }}
   test:
+    docker:
+      - image: circleci/node@latest
     steps:
       - restore_cache:
         key: pre-artifact-{{ .Environment.CIRCLE_SHA1 }}
       - run: npm run test
       - run: npm run test:cov
   build:
+    docker:
+      - image: circleci/node@latest
     steps:
       - restore_cache:
         key: pre-artifact-{{ .Environment.CIRCLE_SHA1 }}
