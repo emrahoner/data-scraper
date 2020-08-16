@@ -39,7 +39,7 @@ jobs:
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run: npm publish --access publish
+      - run: npm publish --access public
 
 workflows:
   build-test-publish:
@@ -65,6 +65,6 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
-              only: master
+              ignore: /.*/
           requires:
             - build
