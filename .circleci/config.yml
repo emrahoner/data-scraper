@@ -1,44 +1,73 @@
 version: 2.1
 
+defaults: &defaults
+  docker:
+    - image: circleci/node:latest
+  working_directory: ~/repo
+
 jobs:
   pre:
-    docker:
-      - image: circleci/node:latest
-    working_directory: ~/repo
+    <<: *defaults
     steps:
       - checkout
       - run: npm ci
-      - save_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths: 
-            - ~/repo
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
   test:
-    docker:
-      - image: circleci/node:latest
-    working_directory: ~/repo
+    <<: *defaults
     steps:
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - attach_workspace:
+          at: ~/repo
       - run: npm run test
       - run: npm run test:cov
   build:
-    docker:
-      - image: circleci/node:latest
-    working_directory: ~/repo
+    <<: *defaults
     steps:
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - attach_workspace:
+          at: ~/repo
       - run: npm run prebuild
       - run: npm run build
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+  publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run: npm publish
 
 workflows:
   build-test-publish:
+    filters:
+      branches:
+        only: master
     jobs:
-      - pre
+      - pre:
+          filters:
+            branches:
+              only: master
       - test:
+          filters:
+            branches:
+              only: master
           requires:
             - pre
       - build:
+          filters:
+            branches:
+              only: master
           requires:
-            - pre
             - test
+      - publish:
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              only: master
+          requires:
+            - build
