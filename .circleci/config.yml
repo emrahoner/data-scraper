@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  pre:
+    docker:
+      - image: circleci/node@latest
+    steps:
+      - checkout
+      - run: npm ci
+      - save_cache:
+        key: pre-artifact-{{ .Environment.CIRCLE_SHA1 }}
+  test:
+    steps:
+      - restore_cache:
+        key: pre-artifact-{{ .Environment.CIRCLE_SHA1 }}
+      - run: npm run test
+      - run: npm run test:cov
+  build:
+    steps:
+      - restore_cache:
+        key: pre-artifact-{{ .Environment.CIRCLE_SHA1 }}
+      - run: npm run prebuild
+      - run: npm run build
+
+workflows:
+  build-test-publish:
+    jobs:
+      - pre
+      - test:
+          requires:
+            - pre
+      - build:
+          requires:
+            - pre
+            - test
