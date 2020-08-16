@@ -43,9 +43,6 @@ jobs:
 
 workflows:
   build-test-publish:
-    filters:
-      branches:
-        only: master
     jobs:
       - pre:
           filters:
