@@ -46,16 +46,22 @@ workflows:
     jobs:
       - pre:
           filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
             branches:
               only: master
       - test:
           filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
             branches:
               only: master
           requires:
             - pre
       - build:
           filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
             branches:
               only: master
           requires:
