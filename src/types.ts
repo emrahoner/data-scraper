@@ -9,12 +9,17 @@ export interface ScrapeOptions {
 
 export interface ScrapeOption {
   selector?: string;
-  method?: ScrapeMethod | ScrapeMethod[];
+  method?: ScrapeMethod | ScrapeMethodInfo | Array<ScrapeMethodInfo|ScrapeMethod>;
   child?: ScrapeOptions;
   isArray?: boolean;
 }
 
-export type ScrapeMethod = 'html' | 'text' | 'href' | 'value' | 'src' | 'trim';
+export interface ScrapeMethodInfo {
+  name: ScrapeMethod
+  params?: any[]
+}
+
+export type ScrapeMethod = 'html' | 'text' | 'href' | 'value' | 'src' | 'trim' | 'format' | 'joinUrl' | 'encodeUrl';
 
 export interface TraverseNodeRef {
   tagName: string;

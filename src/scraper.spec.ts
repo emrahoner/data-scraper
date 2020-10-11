@@ -355,6 +355,8 @@ describe('Scraper', () => {
                                 </p>
                                 <div>
                                     <img src="/image.jpeg" alt="Image Text">
+                                    <img src="../image2.jpeg" alt="Image Text">
+                                    <img src="img/image3.jpeg" alt="Image Text">
                                 </div>
                             </div>
                         </div>
@@ -381,17 +383,32 @@ describe('Scraper', () => {
         scrape: {
           targetProp1: {
             selector: 'div.footer span',
-            method: 'html',
+            method: {
+              name: 'html'
+            }
           },
           targetProp2: {
             selector: 'div.main img',
-            method: 'src',
+            isArray: true,
+            method: [
+              'src',
+              {
+                name: 'joinUrl',
+                params: [
+                  'http://www.emon.com/docs/scraping/introduction.html'
+                ]
+              }
+            ]
           },
         },
       };
       const targetObject = {
         targetProp1: '2020',
-        targetProp2: '/image.jpeg',
+        targetProp2: [
+          'http://www.emon.com/image.jpeg',
+          'http://www.emon.com/docs/image2.jpeg',
+          'http://www.emon.com/docs/scraping/img/image3.jpeg'
+        ]
       };
       const scraper = scraperFactory.create(config);
       const parsedObject = scraper.scrape(htmlString);
@@ -403,11 +420,16 @@ describe('Scraper', () => {
         scrape: {
           targetProp1: {
             selector: 'div.footer span',
-            method: 'html',
+            method: {
+              name: 'html'
+            }
           },
           targetProp2: {
             selector: 'div.main img',
-            method: 'src',
+            isArray: true,
+            method: {
+              name: 'src'
+            }
           },
           targetProp3: {
             selector: 'div.header',
@@ -426,7 +448,11 @@ describe('Scraper', () => {
       };
       const targetObject = {
         targetProp1: '2020',
-        targetProp2: '/image.jpeg',
+        targetProp2: [
+          '/image.jpeg',
+          '../image2.jpeg',
+          'img/image3.jpeg'
+        ],
         targetProp3: {
           child1: 'Menu1',
           child2: 'Menu2',

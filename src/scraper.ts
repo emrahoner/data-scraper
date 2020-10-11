@@ -7,6 +7,7 @@ import {
   TraverserFactory,
   Selector,
   ScrapeMethod,
+  ScrapeMethodInfo,
 } from './types';
 import SelectorComparer from './selector-comparer';
 import * as scrapeMethods from './scrape-methods';
@@ -16,18 +17,20 @@ interface ScrapingContext {
   value?: any;
   isArray: boolean;
   isValue: any;
-  method?: ScrapeMethod | ScrapeMethod[];
+  method?: ScrapeMethod | ScrapeMethodInfo | Array<ScrapeMethodInfo|ScrapeMethod>;
   isEqual?: boolean;
 }
 
-function getValue(value: any, methods: ScrapeMethod | ScrapeMethod[]): any {
-  if (!value || !methods) return value;
-  let methodList: ScrapeMethod[];
+function getValue(value: any, methods: ScrapeMethod | ScrapeMethodInfo | Array<ScrapeMethod|ScrapeMethodInfo>): any {
+  if (!methods) return value;
+  let methodList: ScrapeMethodInfo[];
   if (methods) {
-    methodList = Array.isArray(methods) ? methods : [methods];
+    methodList = Array.isArray(methods) ? 
+      methods.map(x => (typeof x === 'string' ? { name: x } : x)) : 
+      [typeof methods === 'string' ? { name: methods } : methods];
   }
   return (methodList || []).reduce((value, method) => {
-    return scrapeMethods[method](value);
+    return scrapeMethods[method.name].apply(null, [value, ...(method.params || [])]);
   }, value);
 }
 
