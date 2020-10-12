@@ -21,7 +21,10 @@ interface ScrapingContext {
   isEqual?: boolean;
 }
 
-function getValue(value: any, methods: ScrapeMethod | ScrapeMethodInfo | Array<ScrapeMethod|ScrapeMethodInfo>): any {
+const valueRegex = /^\s*\$value\s*$/
+const variableRegex = /^\s*\$variables\[('([a-zA-Z0-9-_]+)')|("([a-zA-Z0-9-_]+)")\]\s*$/
+
+function getValue(value: any, methods: ScrapeMethod | ScrapeMethodInfo | Array<ScrapeMethod|ScrapeMethodInfo>, variables?: any): any {
   if (!methods) return value;
   let methodList: ScrapeMethodInfo[];
   if (methods) {
@@ -30,7 +33,19 @@ function getValue(value: any, methods: ScrapeMethod | ScrapeMethodInfo | Array<S
       [typeof methods === 'string' ? { name: methods } : methods];
   }
   return (methodList || []).reduce((value, method) => {
-    return scrapeMethods[method.name].apply(null, [value, ...(method.params || [])]);
+    let variable
+    const params = !method.params || !method.params.length
+      ? [value]
+      : method.params.map(param => {
+        if(valueRegex.test(param)) {
+          return value
+        } else if(variables && (variable = variableRegex.exec(param))) {
+          return variables[variable[2]||variable[4]]
+        } else {
+          return param
+        }
+      })
+    return scrapeMethods[method.name].apply(null, params);
   }, value);
 }
 
@@ -47,7 +62,7 @@ class Scraper {
     );
   }
 
-  scrape<T>(object: any): T {
+  scrape<T>(object: any, variables?: any): T {
     const traverser = this.traverserFactory.create(object);
     let next: TraverseNode;
     const scrapedObject: any = {};
@@ -61,7 +76,7 @@ class Scraper {
               if (context.isArray && !ref[context.prop]) {
                 ref[context.prop] = [];
               }
-              const value = getValue(context.value, context.method);
+              const value = getValue(context.value, context.method, variables);
               if (context.isArray) {
                 ref[context.prop].push(value);
               } else {

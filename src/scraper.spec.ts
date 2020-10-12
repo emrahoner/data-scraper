@@ -395,7 +395,8 @@ describe('Scraper', () => {
               {
                 name: 'joinUrl',
                 params: [
-                  'http://www.emon.com/docs/scraping/introduction.html'
+                  '$value',
+                  '$variables["url"]'
                 ]
               }
             ]
@@ -411,7 +412,7 @@ describe('Scraper', () => {
         ]
       };
       const scraper = scraperFactory.create(config);
-      const parsedObject = scraper.scrape(htmlString);
+      const parsedObject = scraper.scrape(htmlString, { url: 'http://www.emon.com/docs/scraping/introduction.html' });
       expect(parsedObject).toEqual(targetObject);
     });
 
