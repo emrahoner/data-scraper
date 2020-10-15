@@ -21,11 +21,16 @@ export interface ScrapeMethodInfo {
 
 export type ScrapeMethod = 'html' | 'text' | 'href' | 'value' | 'src' | 'trim' | 'format' | 'joinUrl' | 'encodeUrl';
 
+export interface NamedNodeMap {
+  [name: string]: Attribute
+}
+
 export interface TraverseNodeRef {
   tagName: string;
   id?: string;
   classList?: string[];
   value?: any;
+  attributes?: NamedNodeMap
 }
 
 export interface TraverseNode {
@@ -56,11 +61,26 @@ export interface Attribute {
   value: string;
 }
 
+export enum AttributeSelectorOperator {
+  equals,
+  begins,
+  contains,
+  ends,
+  hasToken,
+  hyphenedEqual
+}
+
+export interface AttributeSelector {
+  name: string
+  value: string
+  operator: AttributeSelectorOperator
+}
+
 export interface Selector {
   tag?: string;
   classes?: string[];
   id?: string;
-  attributes?: Attribute[];
+  attributes?: AttributeSelector[];
   isChild?: boolean;
 }
 

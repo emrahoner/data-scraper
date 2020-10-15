@@ -426,7 +426,7 @@ describe('Scraper', () => {
             }
           },
           targetProp2: {
-            selector: 'div.main img',
+            selector: 'div.main img[alt^="Image"]',
             isArray: true,
             method: {
               name: 'src'

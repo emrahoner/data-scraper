@@ -1,4 +1,4 @@
-import { Selector } from '../types';
+import { Selector, AttributeSelectorOperator } from '../types';
 import CssSelectorParser from './css-selector-parser';
 
 describe('Selector Parser', () => {
@@ -93,6 +93,29 @@ describe('Selector Parser', () => {
         tag: 'div',
         id: 'identifierX',
         isChild: true,
+      },
+    ];
+    const result = parser.parse(selector);
+    expect(result).toEqual(expected);
+  });
+
+
+  it('parses child two elements without space character', () => {
+    const selector = 'span[attr1="value1"] [attr2^="value2"]';
+    const expected: Selector[] = [
+      {
+        tag: 'span',
+        isChild: false,
+        attributes: [
+          { name: "attr1", value: "value1", operator: AttributeSelectorOperator.equals }
+        ]
+      },
+      {
+        tag: '',
+        isChild: false,
+        attributes: [
+          { name: "attr2", value: "value2", operator: AttributeSelectorOperator.begins }
+        ]
       },
     ];
     const result = parser.parse(selector);

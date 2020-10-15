@@ -34,6 +34,9 @@ function getTraverseNodeRef(current: Element) {
         : undefined,
     id: current.id || undefined,
     value: current,
+    attributes: Array.from(current.attributes).reduce((prev, curr) => {
+      return { ...prev, [curr.name]: { name: curr.name, value: curr.value } }
+    }, {})
   };
 }
 
