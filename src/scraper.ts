@@ -124,7 +124,7 @@ class Scraper {
           allSelectors,
         );
         if (childContexts && childContexts.length) {
-          for (const childContext of childContexts) {
+          childContexts.forEach((childContext, index) => {
             result.push([
               {
                 prop: key,
@@ -132,11 +132,11 @@ class Scraper {
                 isValue: !option.child,
                 value: option.child ? null : traverseNode.ref.value,
                 method: option.method,
-                isEqual: true,
+                isEqual: index === 0,
               },
               ...childContext,
             ]);
-          }
+          })
         } else {
           result.push([
             {

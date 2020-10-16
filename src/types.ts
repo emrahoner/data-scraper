@@ -19,7 +19,7 @@ export interface ScrapeMethodInfo {
   params?: any[]
 }
 
-export type ScrapeMethod = 'html' | 'text' | 'href' | 'value' | 'src' | 'trim' | 'format' | 'joinUrl' | 'encodeUrl';
+export type ScrapeMethod = 'html' | 'text' | 'href' | 'value' | 'src' | 'trim' | 'format' | 'joinUrl' | 'encodeUrl' | 'attr';
 
 export interface NamedNodeMap {
   [name: string]: Attribute

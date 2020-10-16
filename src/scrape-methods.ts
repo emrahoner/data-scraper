@@ -18,6 +18,10 @@ export function src(ref: Element): string {
   return ref.getAttribute('src');
 }
 
+export function attr(ref: Element, name: string): string {
+  return ref.getAttribute(name)
+}
+
 export function trim(value: string): string {
   return value.trim();
 }

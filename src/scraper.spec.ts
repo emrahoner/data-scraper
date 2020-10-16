@@ -513,5 +513,59 @@ describe('Scraper', () => {
       const parsedObject = scraper.scrape(htmlString);
       expect(parsedObject).toEqual(targetObject);
     });
+
+    it('parses value from parent selected element', async () => {
+      const config: ScraperOptions = {
+        scrape: {
+          targetProp1: {
+            selector: 'img',
+            isArray: true,
+            child: {
+              prop1: {
+                method: {
+                  name: 'attr',
+                  params: [
+                    '$value',
+                    'alt'
+                  ]
+                },
+              },
+              prop2: {
+                child: {
+                  prop3: {
+                    method: 'src'
+                  }
+                }
+              }
+            },
+          },
+        },
+      };
+      const targetObject = {
+        targetProp1: [
+          {
+            prop1: 'Image Text',
+            prop2: {
+              prop3: '/image.jpeg'
+            }
+          },
+          {
+            prop1: 'Image Text',
+            prop2: {
+              prop3: '../image2.jpeg'
+            }
+          },
+          {
+            prop1: 'Image Text',
+            prop2: {
+              prop3: 'img/image3.jpeg'
+            }
+          }
+        ],
+      };
+      const scraper = scraperFactory.create(config);
+      const parsedObject = scraper.scrape(htmlString);
+      expect(parsedObject).toEqual(targetObject);
+    });
   });
 });
